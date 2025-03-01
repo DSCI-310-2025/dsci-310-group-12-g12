@@ -66,10 +66,10 @@ Before running the project, ensure that **Docker** and **Docker Compose** are in
 ## Dependencies
 The following dependencies are required to run the project:
 
-Docker: For containerization and creating a reproducible environment.
-R: Programming language used for analysis and modeling.
-RStudio: IDE used to interact with the R environment.
-renv: For managing R dependencies and project environments.
+- Docker: For containerization and creating a reproducible environment.
+- R: Programming language used for analysis and modeling.
+- RStudio: IDE used to interact with the R environment.
+- renv: For managing R dependencies and project environments.
 
 ## License
 
