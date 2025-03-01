@@ -5,7 +5,7 @@ Thank you for considering contributing to this project! We welcome all participa
 
 **How to Contribute**
 1. Reporting Issues
-    - Use the DSCI-310-2025 Github Issues tab to report bugs or request features.
+    - Use the <u>DSCI-310-2025 Github<u/> Issues tab to report bugs or request features.
     - Provide idea and evidence to reproduce the issue.
     - Suggest potential solutions if possible.
 
