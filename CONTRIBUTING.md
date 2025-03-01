@@ -5,7 +5,7 @@ Thank you for considering contributing to this project! We welcome all participa
 
 **How to Contribute**
 1. Reporting Issues
-    - Use the Github Issues tab to report bugs or request features.
+    - Use the DSCI-310-2025 Github Issues tab to report bugs or request features.
     - Provide idea and evidence to reproduce the issue.
     - Suggest potential solutions if possible.
 
@@ -17,7 +17,8 @@ Thank you for considering contributing to this project! We welcome all participa
 
 3. Code Guidelines
 To ensure consistency across contributions, please follow the Tidyverse Style Guide for R code.
-        - Code Formatting Use snake_case for variable and function names (e.g., calculate_mean(), data_frame(). Indent with 2 spaces, not tabs. Keep lines under 80 characters for readability. Use spaces around operators (x <- 10, y + z). Avoid setwd() in scripts to prevent path conflicts.
+        - Code Formatting Use snake_case for variable and function names (e.g., calculate_mean(), data_frame(). Indent with 2 spaces, not tabs. Keep lines under 80 characters for     
+          readability. Use spaces around operators (x <- 10, y + z). Avoid setwd() in scripts to prevent path conflicts.
         - 💡 Reference: Tidyverse R Style Guide
 
 4. Testing
