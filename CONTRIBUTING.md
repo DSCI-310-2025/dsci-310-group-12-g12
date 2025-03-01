@@ -1,8 +1,9 @@
-##Contributing to DSCI-31-GROUP-12-G12
+**Contributing to DSCI-31-GROUP-12-G12**
+---
 Thank you for considering contributing to this project! We welcome all participants to report bugs, feature suggestions, and code contributions. Please follow the following guidelines to complete a contribution process.
 ---
 
-###How to Contribute
+**How to Contribute**
 1. Reporting Issues
     - Use the Github Issues tab to report bugs or request features.
     - Provide idea and evidence to reproduce the issue.
@@ -16,14 +17,8 @@ Thank you for considering contributing to this project! We welcome all participa
 
 3. Code Guidelines
 To ensure consistency across contributions, please follow the Tidyverse Style Guide for R code.
-
-Code Formatting
-Use snake_case for variable and function names (e.g., calculate_mean(), data_frame).
-Indent with 2 spaces, not tabs.
-Keep lines under 80 characters for readability.
-Use spaces around operators (x <- 10, y + z).
-Avoid setwd() in scripts to prevent path conflicts.
-💡 Reference: Tidyverse R Style Guide
+        - Code Formatting Use snake_case for variable and function names (e.g., calculate_mean(), data_frame(). Indent with 2 spaces, not tabs. Keep lines under 80 characters for readability. Use spaces around operators (x <- 10, y + z). Avoid setwd() in scripts to prevent path conflicts.
+        - 💡 Reference: Tidyverse R Style Guide
 
 4. Testing
 Ensure your code runs without breaking existing functionality.
