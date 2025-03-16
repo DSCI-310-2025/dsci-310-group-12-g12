@@ -25,11 +25,11 @@ args <- docopt(doc)
 df <- read_csv(args$file_path)
 
 # Convert the target variable to a factor for better visualization
-df$default_payment_next_month <- as.factor(df$default.payment.next.month)
+df$default.payment.next.month <- as.factor(df$default.payment.next.month)
 
 # Create a bar plot for the distribution of the target variable (default_payment_next_mont)
-target_dis <- ggplot(df, aes(x = default.payment.next.month)) +
-  geom_bar(fill = "steelblue") +
+target_dis <- ggplot(df, aes(x = default.payment.next.month, group = default.payment.next.month, fill = default.payment.next.month)) +
+  geom_bar() +
   labs(title = "Distribution of Default Payments", x = "Default (0 = No, 1 = Yes)", y = "Count") +
   theme_minimal()
 
