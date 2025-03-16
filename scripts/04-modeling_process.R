@@ -37,8 +37,8 @@ normalize <- function(x) { (x - min(x)) / (max(x) - min(x)) }
 numeric_columns <- sapply(train_df, is.numeric)
 
 # Extract target variable BEFORE normalization
-train_labels <- as.factor(train_df$default_payment_next_month)
-test_labels <- as.factor(test_df$default_payment_next_month)
+train_labels <- as.factor(train_df$default.payment.next.month)
+test_labels <- as.factor(test_df$default.payment.next.month)
 
 # Apply normalization only to numeric columns (excluding the target variable)
 train_df_norm <- as.data.frame(lapply(train_df[, numeric_columns], normalize))
