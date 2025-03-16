@@ -10,11 +10,11 @@ data/clean/UCI_Credit_Card_clean.csv: scripts/02-data_clean.R data/raw/UCI_Credi
 	
 # EDA
 results/eda_default_payment_distribution.png results/eda_scatter_facet_plots.png: scripts/03-eda.R data/clean/UCI_Credit_Card_clean.csv
-	Rscript scripts/03-eda.R data/clean/UCI_Credit_Card_clean.csv results/eda_default_payment_distribution.png results/eda_scatter_facet_plots.png
+	Rscript scripts/03-eda.R --file_path=data/clean/UCI_Credit_Card_clean.csv --output_path_prefix=results/eda
 
 # Modeling
 results/modeling_confusion_matrix.csv results/modeling_k_value_selection.png results/modeling_performance_metrics.txt: scripts/04-modeling_process.R data/clean/UCI_Credit_Card_clean.csv
-	Rscript scripts/04-modeling_process.R data/clean/UCI_Credit_Card_clean.csv results/modeling_confusion_matrix.csv results/modeling_k_value_selection.png results/modeling_performance_metrics.txt
+	Rscript scripts/04-modeling_process.R --file_path=data/clean/UCI_Credit_Card_clean.csv --output_path_prefix=results/modeling
 
 # Generate the final report
 analysis.html: analysis.qmd results/eda_default_payment_distribution.png results/eda_scatter_facet_plots.png results/modeling_confusion_matrix.csv results/modeling_k_value_selection.png results/modeling_performance_metrics.txt
