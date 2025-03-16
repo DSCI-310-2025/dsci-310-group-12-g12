@@ -25,7 +25,7 @@ args <- docopt(doc)
 df <- read.csv(args$file_path)
 
 # 1. Remove unnecessary columns (e.g., ID)
-df <- df %>% select(-id)
+df <- df %>% select(-ID)
 
 # 2. Split the data into training (80%) and testing (20%) sets using simple random sampling
 set.seed(123)  # For reproducibility
