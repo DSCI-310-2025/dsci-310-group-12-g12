@@ -6,8 +6,8 @@ all:
 
 # Data cleaning
 data/clean/UCI_Credit_Card_clean.csv: scripts/02-data_clean.R data/raw/UCI_Credit_Card.csv
-	Rscript scripts/02-data_clean.R data/raw/UCI_Credit_Card.csv data/clean/UCI_Credit_Card_clean.csv
-
+	Rscript scripts/02-data_clean.R --file_path=data/raw/UCI_Credit_Card.csv --output_path=data/clean/UCI_Credit_Card_clean.csv
+	
 # EDA
 results/eda_default_payment_distribution.png results/eda_scatter_facet_plots.png: scripts/03-eda.R data/clean/UCI_Credit_Card_clean.csv
 	Rscript scripts/03-eda.R data/clean/UCI_Credit_Card_clean.csv results/eda_default_payment_distribution.png results/eda_scatter_facet_plots.png
