@@ -25,10 +25,10 @@ args <- docopt(doc)
 df <- read_csv(args$file_path)
 
 # Convert the target variable to a factor for better visualization
-df$default_payment_next_month <- as.factor(df$default_payment_next_month)
+df$default_payment_next_month <- as.factor(df$default.payment.next.month)
 
 # Create a bar plot for the distribution of the target variable (default_payment_next_mont)
-target_dis <- ggplot(df, aes(x = default_payment_next_month)) +
+target_dis <- ggplot(df, aes(x = default.payment.next.month)) +
   geom_bar(fill = "steelblue") +
   labs(title = "Distribution of Default Payments", x = "Default (0 = No, 1 = Yes)", y = "Count") +
   theme_minimal()
@@ -43,7 +43,7 @@ df_long <- df %>%
                names_to = "Feature", values_to = "Value")
 
 # Scatter plots using facet grid with color for default class and trend lines
-scatter_plot <- ggplot(df_long, aes(x = Value, y = default_payment_next_month, color = default_payment_next_month)) +
+scatter_plot <- ggplot(df_long, aes(x = Value, y = default.payment.next.month, color = default.payment.next.month)) +
   geom_point(alpha = 0.5) +
   geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +
   facet_wrap(~ Feature, scales = "free_x") +
