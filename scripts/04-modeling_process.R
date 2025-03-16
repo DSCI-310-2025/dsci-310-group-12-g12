@@ -37,16 +37,16 @@ normalize <- function(x) { (x - min(x)) / (max(x) - min(x)) }
 numeric_columns <- sapply(train_df, is.numeric)
 
 # Extract target variable BEFORE normalization
-train_labels <- as.factor(train_df$default.payment.next.month)
-test_labels <- as.factor(test_df$default.payment.next.month)
+train_labels <- as.factor(train_df$default_payment_next_month) 
+test_labels <- as.factor(test_df$default_payment_next_month)    
 
 # Apply normalization only to numeric columns (excluding the target variable)
 train_df_norm <- as.data.frame(lapply(train_df[, numeric_columns], normalize))
 test_df_norm <- as.data.frame(lapply(test_df[, numeric_columns], normalize))
 
 # Remove the target variable from the normalized data (it should NOT be included in knn predictors)
-train_df_norm <- train_df_norm[, colnames(train_df_norm) != "default.payment.next.month"]
-test_df_norm <- test_df_norm[, colnames(test_df_norm) != "default.payment.next.month"]
+train_df_norm <- train_df_norm[, colnames(train_df_norm) != "default_payment_next_month"]
+test_df_norm <- test_df_norm[, colnames(test_df_norm) != "default_payment_next_month"]
 
 # Try different k values and store accuracy results
 k_values <- seq(1, 20, by = 1)  # Testing k from 1 to 20
@@ -55,7 +55,7 @@ accuracy_results <- data.frame(k = k_values, accuracy = NA)
 for (i in 1:length(k_values)) {
   knn_pred <- knn(train = train_df_norm, test = test_df_norm, cl = train_labels, k = k_values[i])
   
-  # Calculate accuracy
+ # Calculate accuracy
   accuracy_results$accuracy[i] <- sum(knn_pred == test_labels) / length(test_labels)
 }
 
@@ -74,6 +74,7 @@ ggplot(accuracy_results, aes(x = k, y = accuracy)) +
 
 # Save the plot to a file
 ggsave(paste0(args$output_path_prefix, "_k_value_selection.png"))
+
 
 # Train KNN Model with the best k
 knn_model <- knn(train = train_df_norm, test = test_df_norm, cl = train_labels, k = best_k)
