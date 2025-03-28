@@ -24,7 +24,7 @@ split_data <- function(df, train_size = 0.8) {
 #' @return A data frame with new avg columns and removed original columns
 #' @export
 compute_avg_amounts <- function(df) {
-  library(dplyr)  # Ensure dplyr functions work
+  library(dplyr)  
   
   # Identify columns
   bill_amt_cols <- names(df)[grepl("^bill_amt", names(df))]
@@ -41,5 +41,5 @@ compute_avg_amounts <- function(df) {
   # Remove original columns after computing averages
   df <- df %>% select(-all_of(c(bill_amt_cols, pay_amt_cols)))
   
-  return(df)  # <== This line ensures the function properly returns the modified dataframe
-}  # <== Ensure this closing bracket is present
+  return(df)  
+}  
