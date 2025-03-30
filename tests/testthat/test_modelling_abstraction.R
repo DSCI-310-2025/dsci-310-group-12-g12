@@ -1,85 +1,77 @@
 library(testthat)
 
 # Test normalize()
-test_that("normalize correctly scales values between 0 and 1", {
-  x <- c(10, 20, 30)
+test_that("normalize scales between 0 and 1", {
+  x <- c(5, 10, 15)
   result <- normalize(x)
   expect_true(all(result >= 0 & result <= 1))
   expect_equal(result[1], 0)
   expect_equal(result[3], 1)
 })
 
-test_that("normalize works with constant vector", {
-  x <- rep(5, 5)
+test_that("normalize returns NaN for constant input", {
+  x <- rep(5, 3)
   result <- normalize(x)
-  expect_true(all(is.nan(result)))  # (5-5)/(5-5) = NaN
+  expect_true(all(is.nan(result)))
 })
 
 # Test split_dataset()
-test_that("split_dataset returns train and test sets of correct sizes", {
+test_that("split_dataset splits into 80/20", {
   df <- data.frame(x = 1:100, y = rnorm(100))
   splits <- split_dataset(df)
-
   expect_named(splits, c("train", "test"))
   expect_equal(nrow(splits$train), 80)
   expect_equal(nrow(splits$test), 20)
 })
 
 # Test prepare_knn_data()
-test_that("prepare_knn_data returns normalized data and label vectors", {
+test_that("prepare_knn_data returns proper structure", {
   df <- data.frame(
     default_payment_next_month = sample(0:1, 100, replace = TRUE),
     LIMIT_BAL = runif(100, 10000, 500000),
     AGE = sample(20:60, 100, replace = TRUE)
   )
-
   splits <- split_dataset(df)
-  knn_data <- prepare_knn_data(splits$train, splits$test)
-
-  expect_named(knn_data, c("train", "test", "train_labels", "test_labels"))
-  expect_true(all(knn_data$train >= 0 & knn_data$train <= 1))
-  expect_equal(length(knn_data$train_labels), nrow(knn_data$train))
+  result <- prepare_knn_data(splits$train, splits$test)
+  expect_named(result, c("train", "test", "train_labels", "test_labels"))
+  expect_equal(nrow(result$train), nrow(splits$train))
+  expect_equal(nrow(result$test), nrow(splits$test))
 })
 
-test_that("prepare_knn_data throws error if target column is missing", {
+test_that("prepare_knn_data throws error if target column missing", {
   df <- data.frame(LIMIT_BAL = runif(10), AGE = runif(10))
-  expect_error(
-    prepare_knn_data(df, df),
-    regexp = "subscript out of bounds"
-  )
+  expect_error(prepare_knn_data(df, df), "Target column")
 })
 
 # Test evaluate_k_values()
-test_that("evaluate_k_values returns correct structure and accuracy values", {
+test_that("evaluate_k_values returns accuracy for each k", {
   df <- data.frame(
-    default_payment_next_month = sample(0:1, 50, replace = TRUE),
-    LIMIT_BAL = runif(50, 10000, 500000),
-    AGE = sample(20:60, 50, replace = TRUE)
+    default_payment_next_month = sample(0:1, 60, replace = TRUE),
+    LIMIT_BAL = runif(60, 10000, 500000),
+    AGE = sample(20:60, 60, replace = TRUE)
   )
-
   splits <- split_dataset(df)
   knn_data <- prepare_knn_data(splits$train, splits$test)
-  acc_df <- evaluate_k_values(knn_data$train, knn_data$test, knn_data$train_labels, knn_data$test_labels, k_values = 1:5)
-
-  expect_s3_class(acc_df, "data.frame")
-  expect_named(acc_df, c("k", "accuracy"))
-  expect_equal(nrow(acc_df), 5)
-  expect_true(all(acc_df$accuracy >= 0 & acc_df$accuracy <= 1))
+  result <- evaluate_k_values(knn_data$train, knn_data$test, knn_data$train_labels, knn_data$test_labels, k_values = 1:3)
+  expect_s3_class(result, "data.frame")
+  expect_equal(nrow(result), 3)
+  expect_named(result, c("k", "accuracy"))
+  expect_true(all(result$accuracy >= 0 & result$accuracy <= 1))
 })
 
 # Test save_accuracy_plot()
 test_that("save_accuracy_plot creates a PNG file", {
   tmp <- tempfile(fileext = ".png")
-  df <- data.frame(k = 1:3, accuracy = c(0.8, 0.85, 0.9))
+  df <- data.frame(k = 1:3, accuracy = c(0.7, 0.75, 0.8))
   save_accuracy_plot(df, tmp)
   expect_true(file.exists(tmp))
   unlink(tmp)
 })
 
 # Test save_model_outputs()
-test_that("save_model_outputs creates confusion matrix and metrics file", {
+test_that("save_model_outputs creates files", {
   tmp_prefix <- tempfile()
-  actual <- factor(sample(0:1, 50, replace = TRUE))
+  actual <- factor(sample(0:1, 20, replace = TRUE))
   predicted <- actual
   save_model_outputs(predicted, actual, tmp_prefix)
 

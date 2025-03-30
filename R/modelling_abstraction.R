@@ -26,17 +26,21 @@ split_dataset <- function(df) {
 #' @return A list with normalized train/test data and labels
 #' @export
 prepare_knn_data <- function(df_train, df_test, target = "default_payment_next_month") {
+  if (!(target %in% colnames(df_train)) || !(target %in% colnames(df_test))) {
+    stop(paste("Target column", target, "not found in data."))
+  }
+
   numeric_columns <- sapply(df_train, is.numeric)
-  
+
   train_labels <- as.factor(df_train[[target]])
   test_labels <- as.factor(df_test[[target]])
-  
+
   train_norm <- as.data.frame(lapply(df_train[, numeric_columns], normalize))
   test_norm <- as.data.frame(lapply(df_test[, numeric_columns], normalize))
-  
+
   train_norm <- train_norm[, colnames(train_norm) != target]
   test_norm <- test_norm[, colnames(test_norm) != target]
-   
+
   list(
     train = train_norm,
     test = test_norm,
@@ -56,12 +60,12 @@ prepare_knn_data <- function(df_train, df_test, target = "default_payment_next_m
 #' @export
 evaluate_k_values <- function(train, test, train_labels, test_labels, k_values = 1:20) {
   accuracy_results <- data.frame(k = k_values, accuracy = NA)
-  
+
   for (i in seq_along(k_values)) {
     pred <- class::knn(train, test, cl = train_labels, k = k_values[i])
     accuracy_results$accuracy[i] <- mean(pred == test_labels)
   }
-  
+
   return(accuracy_results)
 }
 
@@ -80,7 +84,7 @@ save_accuracy_plot <- function(accuracy_df, out_path) {
       y = "Accuracy"
     ) +
     ggplot2::theme_minimal()
-  
+
   ggplot2::ggsave(out_path, plot = p, width = 7, height = 5)
 }
 
@@ -93,7 +97,7 @@ save_accuracy_plot <- function(accuracy_df, out_path) {
 save_model_outputs <- function(predictions, actual, prefix) {
   conf_mat <- table(Predicted = predictions, Actual = actual)
   utils::write.csv(as.data.frame(conf_mat), paste0(prefix, "_confusion_matrix.csv"))
-  
+
   conf <- caret::confusionMatrix(as.factor(predictions), as.factor(actual))
   utils::write.table(conf$overall, paste0(prefix, "_performance_metrics.txt"), sep = "\t")
   print(conf)
