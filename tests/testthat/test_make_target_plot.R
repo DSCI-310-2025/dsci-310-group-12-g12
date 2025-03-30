@@ -22,5 +22,5 @@ test_that("make_target_plot includes expected aesthetics", {
 
 test_that("make_target_plot fails gracefully if column is missing", {
   df <- data.frame(not_target = c(0, 1, 1))
-  expect_error(make_target_plot(df), "object 'default_payment_next_month' not found")
+  expect_error(make_target_plot(df), "Column 'default_payment_next_month' not found in the dataframe.")
 })
