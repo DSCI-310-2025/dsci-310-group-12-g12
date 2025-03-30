@@ -7,6 +7,7 @@ clean_column_names <- function(df) {
   return(df)
 }
 
+
 #' Split dataset into training and test sets
 #' @param df A data frame
 #' @param train_size Proportion of data to use for training (default: 0.8)
@@ -19,13 +20,14 @@ split_data <- function(df, train_size = 0.8) {
   list(train = df[train_index, ], test = df[-train_index, ])
 }
 
+
+
 #' Compute row-wise averages for BILL_AMT and PAY_AMT columns
 #' @param df A data frame
 #' @return A data frame with new avg columns and removed original columns
 #' @export
 compute_avg_amounts <- function(df) {
-  library(dplyr)  
-  
+  library(dplyr) 
   # Identify columns
   bill_amt_cols <- names(df)[grepl("^bill_amt", names(df))]
   pay_amt_cols <- names(df)[grepl("^pay_amt", names(df))]
@@ -37,9 +39,7 @@ compute_avg_amounts <- function(df) {
   if (length(pay_amt_cols) > 0) {
     df$avg_pay_amt <- rowMeans(df[, pay_amt_cols, drop = FALSE], na.rm = TRUE)
   }
-  
   # Remove original columns after computing averages
   df <- df %>% select(-all_of(c(bill_amt_cols, pay_amt_cols)))
-  
-  return(df)  
-}  
+  return(df)
+}
