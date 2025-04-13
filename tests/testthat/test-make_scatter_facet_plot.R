@@ -1,4 +1,7 @@
 library(testthat)
+
+source("R/make_scatter_facet_plot.R")
+
 test_that("make_scatter_facet_plot works for valid input", {
   df <- data.frame(
     default_payment_next_month = sample(0:1, 100, replace = TRUE),

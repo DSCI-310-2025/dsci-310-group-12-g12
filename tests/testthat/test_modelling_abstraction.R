@@ -1,5 +1,7 @@
 library(testthat)
 
+source("R/modelling_abstraction.R")
+
 # Test normalize()
 test_that("normalize scales between 0 and 1", {
   x <- c(5, 10, 15)
