@@ -6,6 +6,16 @@
 - Jellia Ma
 - Han Qin
 
+## Table of Contents
+
+- [Project Summary](#project-summary)
+- [Data Description](#data-description)
+- [How to Run the Data Analysis](#how-to-run-the-data-analysis)
+  - [Running Outside Docker (Optional)](#running-outside-docker-optional)
+  - [Docker Instructions (Recommended)](#docker-instructions-recommended)
+- [Dependencies](#dependencies)
+- [License](#license)
+
 
 ## Project Summary
 This project aims to predict whether a customer will default on a credit card payment based on various financial and demographic features. The dataset used includes information about customers’ credit history, payment status, demographic data, and other relevant factors. We will use machine learning models to predict the likelihood of a customer defaulting.
@@ -30,7 +40,19 @@ We use a Docker container image to ensure a consistent and reproducible computat
 
 ## How to Run the Data Analysis
 
-Before running the project, ensure that **Docker** and **Docker Compose** are installed on your machine. Follow the steps below:
+If you are using Docker (recommended), follow the steps below.  
+If you are grading or running the analysis **outside of Docker**, you need to install R packages manually as shown below.
+
+### 🔧 Running Outside Docker (Optional)
+
+If you're running the analysis manually (e.g. from RStudio or terminal), install the required R packages:
+
+```r
+install.packages(c(
+  "tidyverse", "readr", "dplyr", "ggplot2", "caret",
+  "e1071", "caTools", "class", "knitr", "testthat",
+  "janitor", "tidyr"
+))
 
 1. **Install Docker**
 
@@ -68,12 +90,36 @@ The following dependencies are required to run the project:
 
 - Docker: For containerization and creating a reproducible environment.
 - R: Programming language used for analysis and modeling.
+
+| Package     | Version     | Description                                   |
+|-------------|-------------|-----------------------------------------------|
+| tidyverse   | Latest at time of container build | Core data wrangling and plotting packages |
+| purrr       | Latest      | Functional programming tools                  |
+| knitr       | Latest      | Report generation via R Markdown / Quarto     |
+| GGally      | 2.2.1       | Extension to ggplot2 for pairwise plots       |
+| tidymodels  | 1.3.0       | Unified modeling framework                    |
+| leaps       | 3.1         | Subset selection for regression               |
+| mltools     | 0.1.0       | Machine learning helper tools                 |
+| janitor     | Latest      | Clean column names and tabulation helpers     |
+| caTools     | Latest      | Splitting data sets and ROC AUC tools         |
+| class       | Latest      | k-Nearest Neighbors classifier                |
+| caret       | Latest      | Classification and regression training        |
+| e1071       | Latest      | Misc ML algorithms (used by caret)            |
+| testthat    | Latest      | Unit testing framework                        |
 - RStudio: IDE used to interact with the R environment.
 - renv: For managing R dependencies and project environments.
 
 ## License
 
-This project is licensed under the terms of the [MIT License](./LICENSE.md).
+This repository contains two types of licenses:
+
+- **Code assets** (e.g., R scripts, Quarto files, functions in the `R/` folder):  
+  Licensed under the [MIT License](./LICENSE.md).
+
+- **Non-code assets** (e.g., report text, figures, analysis results, data documentation):  
+  Licensed under the [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
+
+This dual-licensing ensures that code can be reused freely with attribution, and non-code materials can be shared and adapted with proper credit.
 
 
 

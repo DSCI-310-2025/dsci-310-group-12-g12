@@ -84,15 +84,32 @@ The target variable, `default.payment.next.month`, indicates whether a customer 
 Cleaning & Handling missing values & Feature scaling & Train-test split.
 
 
+```{r download-data, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Create raw data folder if it doesn't exist
+if (!dir.exists("data/raw")) {
+  dir.create("data/raw", recursive = TRUE)
+}
+
+# Define URL and destination path
+url <- "https://archive.ics.uci.edu/ml/machine-learning-databases/00350/UCI%20Credit%20Card.csv"
+destfile <- "data/raw/UCI_Credit_Card.csv"
+
+# Download if not already present
+if (!file.exists(destfile)) {
+  download.file(url, destfile, mode = "wb")
+}
+``` 
+
+
 ```{r tbl-data-preview, echo=FALSE, message=FALSE, warning=FALSE}
 # Read the dataset
 df <- read_csv("data/raw/UCI_Credit_Card.csv")
 df <- clean_column_names(df)
 
-
-
-# Select only the first 6 rows for preview
+# Show preview
 df_preview <- head(df)
+
 
 # Display the table with a caption and automatic numbering
 knitr::kable(df_preview, caption = "Preview of the original dataset used in the analysis.")
