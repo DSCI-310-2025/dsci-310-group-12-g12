@@ -1,3 +1,12 @@
+# Ignore Jupyter checkpoint folders
+.ipynb_checkpoints/
+
+# Ignore random plot outputs
+Rplots.pdf
+
+# Optional: ignore compiled output if not needed
+*.html
+
 # History files
 .Rhistory
 .Rapp.history
