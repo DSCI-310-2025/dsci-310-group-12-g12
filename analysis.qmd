@@ -27,6 +27,9 @@ suppressPackageStartupMessages({
   library(readr)
   library(knitr)
 })
+
+purrr::walk(list.files("R", full.names = TRUE), source)
+
 ```
 
 # Summary
@@ -84,6 +87,9 @@ Cleaning & Handling missing values & Feature scaling & Train-test split.
 ```{r tbl-data-preview, echo=FALSE, message=FALSE, warning=FALSE}
 # Read the dataset
 df <- read_csv("data/raw/UCI_Credit_Card.csv")
+df <- clean_column_names(df)
+
+
 
 # Select only the first 6 rows for preview
 df_preview <- head(df)
@@ -96,20 +102,27 @@ knitr::kable(df_preview, caption = "Preview of the original dataset used in the 
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-# Remove unnecessary columns (e.g., ID)
-df <- df %>% select(-ID)
+
 
 # Split into training (80%) and testing (20%)
 set.seed(123)  # Ensure reproducibility
-split <- sample.split(df$default.payment.next.month, SplitRatio = 0.8)
-train_df <- subset(df, split == TRUE)
-test_df <- subset(df, split == FALSE)
+splits <- split_data(df, train_size = 0.8)
+train_df <- splits$train
+test_df <- splits$test
+
+# Convert to factor HERE once and for all
+train_df$default_payment_next_month <- as.factor(train_df$default_payment_next_month)
+test_df$default_payment_next_month <- as.factor(test_df$default_payment_next_month)
+
+# Compute average columns (after factor conversion)
+train_df <- compute_avg_amounts(train_df)
+test_df <- compute_avg_amounts(test_df)
 
 # Check the dimensions of training data
 train_dim <- dim(train_df)
 
 # Check class distribution
-train_class_dist <- table(train_df$default.payment.next.month) / nrow(train_df)
+train_class_dist <- table(train_df$default_payment_next_month) / nrow(train_df)
 
 # Summary statistics
 train_summary <- summary(train_df)
@@ -122,12 +135,7 @@ missing_values <- sum(is.na(train_df))
 
 
 ```{r tbl-cleaned-data, echo=FALSE, message=FALSE, warning=FALSE}
-# Compute the average of BILL_AMT and PAY_AMT columns for better organization
-train_df$AVG_BILL_AMT <- rowMeans(train_df[, grep("BILL_AMT", names(train_df))])
-train_df$AVG_PAY_AMT <- rowMeans(train_df[, grep("PAY_AMT", names(train_df))])
 
-test_df$AVG_BILL_AMT <- rowMeans(test_df[, grep("BILL_AMT", names(test_df))])
-test_df$AVG_PAY_AMT <- rowMeans(test_df[, grep("PAY_AMT", names(test_df))])
 
 # Select first 6 rows for preview
 train_df_preview <- head(train_df)
@@ -144,8 +152,8 @@ train_df <- train_df %>% select(-starts_with("BILL_AMT"), -starts_with("PAY_AMT"
 test_df <- test_df %>% select(-starts_with("BILL_AMT"), -starts_with("PAY_AMT"))
 
 # Rename LIMIT_BAL to CREDIT_LIMIT for better readability
-train_df <- rename(train_df, CREDIT_LIMIT = LIMIT_BAL)
-test_df <- rename(test_df, CREDIT_LIMIT = LIMIT_BAL)
+train_df <- rename(train_df, credit_limit = limit_bal)
+test_df <- rename(test_df, credit_limit = limit_bal)
 
 # Select first 6 rows for preview
 train_df_final_preview <- head(train_df)
@@ -163,16 +171,13 @@ Visualization for distribution of target variable, brief view of relationship be
 
 
 ```{r fig-target-dist, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Distribution of Default Payments", out.width="65%"}
-# Convert the target variable to a factor for better visualization
-train_df$default.payment.next.month <- as.factor(train_df$default.payment.next.month)
+
 
 # Distribution of default payments
-target_dis <- ggplot(train_df, aes(x = as.factor(default.payment.next.month))) +
-  geom_bar(fill = "steelblue") +
-  labs(title = "Distribution of Default Payments", x = "Default (0 = No, 1 = Yes)", y = "Count") +
-  theme_minimal()
+knn_data <- prepare_knn_data(train_df, test_df, target = "default_payment_next_month")
+make_target_plot(train_df)
 
-target_dis
+
 ```
 
 @fig-target-dist shows the distribution of default payments, highlighting the imbalance in the dataset.
@@ -180,22 +185,11 @@ target_dis
 ```{r fig-scatter-numeric, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Scatter plots of numeric features vs. default payment, showing general distribution with trend lines", out.width="80%"}
 # Reshape the dataset for facet grid visualization
 df_long <- train_df %>% 
-  pivot_longer(cols = c(CREDIT_LIMIT, AGE, AVG_BILL_AMT, AVG_PAY_AMT, PAY_0),
+  pivot_longer(cols = c(credit_limit, age, avg_bill_amt, avg_pay_amt, pay_0),
                names_to = "Feature", values_to = "Value")
 
 # Scatter plots using facet grid with color for default class and trend lines
-ggplot(df_long, aes(x = Value, y = default.payment.next.month, color = default.payment.next.month)) +
-  geom_point(alpha = 0.5) +
-  geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +
-  facet_wrap(~ Feature, scales = "free_x") +
-  labs(title = "Scatter Plots of Numeric Features vs Default Payment",
-       x = "Feature Value", y = "Default Payment (0 = No, 1 = Yes)",
-       color = "Default Status") +
-  theme(strip.text = element_text(size = 14),   
-        axis.text = element_text(size = 12),    
-        axis.title = element_text(size = 14),   
-        legend.text = element_text(size = 12),  
-        legend.title = element_text(size = 14))
+make_scatter_facet_plot(train_df, c("credit_limit", "age", "avg_bill_amt", "avg_pay_amt", "pay_0"))
 ```
     
 
@@ -205,62 +199,33 @@ between numeric variables and the target variable
 
 ## Model Training
 
-```{r fig-knn-accuracy, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="K-Value selection for KNN model, showing accuracy for different values of k", out.width="80%"}
+```{r fig-knn-accuracy, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="K-Value selection for KNN model, showing accuracy for different values of k"}
 
-# Define normalization function
-normalize <- function(x) { (x - min(x)) / (max(x) - min(x)) }
+# Prepare KNN data
+knn_data <- prepare_knn_data(train_df, test_df, target = "default_payment_next_month")
 
-# Select only numeric columns for normalization (excluding the target variable)
-numeric_columns <- sapply(train_df, is.numeric)
-
-# Extract target variable BEFORE normalization
-train_labels <- as.factor(train_df$default.payment.next.month) 
-test_labels <- as.factor(test_df$default.payment.next.month)    
-
-# Apply normalization only to numeric columns (excluding the target variable)
-train_df_norm <- as.data.frame(lapply(train_df[, numeric_columns], normalize))
-test_df_norm <- as.data.frame(lapply(test_df[, numeric_columns], normalize))
-
-# Remove the target variable from the normalized data (it should NOT be included in knn predictors)
-train_df_norm <- train_df_norm[, colnames(train_df_norm) != "default.payment.next.month"]
-test_df_norm <- test_df_norm[, colnames(test_df_norm) != "default.payment.next.month"]
-
-# Try different k values and store accuracy results
-k_values <- seq(1, 20, by = 1)  # Testing k from 1 to 20
-accuracy_results <- data.frame(k = k_values, accuracy = NA)
-
-for (i in 1:length(k_values)) {
-  knn_pred <- knn(train = train_df_norm, test = test_df_norm, cl = train_labels, k = k_values[i])
-  
- # Calculate accuracy
-  accuracy_results$accuracy[i] <- sum(knn_pred == test_labels) / length(test_labels)
-}
-
-# Find the best k (highest accuracy)
+# Evaluate accuracy over multiple k-values
+accuracy_results <- evaluate_k_values(knn_data$train, knn_data$test, knn_data$train_labels, knn_data$test_labels)
 best_k <- accuracy_results$k[which.max(accuracy_results$accuracy)]
 
-# Plot accuracy vs. k to visualize the best k choice
-ggplot(accuracy_results, aes(x = k, y = accuracy)) +
-  geom_line(color = "blue") +
-  geom_point(size = 3, color = "red") +
-  labs(title = "K-Value Selection for KNN",
-       x = "Number of Neighbors (k)",
-       y = "Accuracy") +
-  theme_minimal()
+# Save accuracy plot
+save_accuracy_plot(accuracy_results, "results/knn_accuracy.png")
 
-# Train KNN Model 
-knn_model <- knn(train = train_df_norm, test = test_df_norm, cl = train_labels, k = best_k)
+make_accuracy_plot(accuracy_results)
 
-# Evaluate Model Performance
-conf_matrix <- table(Predicted = knn_model, Actual = test_labels)
+# Train KNN model
+knn_model <- class::knn(knn_data$train, knn_data$test, cl = knn_data$train_labels, k = best_k)
+
+# Save confusion matrix and metrics
+save_model_outputs(knn_model, knn_data$test_labels, "results/knn")
 ```
 
 ## Performance Evaluation
 
 ```{r tbl-conf-matrix, echo=FALSE, message=FALSE, warning=FALSE}
 # Compute Accuracy, Precision, and Confusion Matrix
-confusion <- confusionMatrix(as.factor(knn_model), as.factor(test_labels))
-
+confusion <- confusionMatrix(as.factor(knn_model), as.factor(knn_data$test_labels))
+false_negatives <- confusion$table[1, 2]
 # Extract confusion matrix as a table
 conf_matrix_table <- as.data.frame(confusion$table)
 
@@ -311,11 +276,11 @@ knitr::kable(metrics, caption = "Performance Metrics of KNN Model.")
 # Discussion
 
 ## Summary of Result:
-The best k-value for the K-Nearest Neighbors (KNN) model was determined to be `r best_k`. @fig-knn-accuracy shows that as k increases, the accuracy stabilizes around 80%, suggesting an optimal balance between underfitting and overfitting.
+The best value of *k* for the K-Nearest Neighbors (KNN) model was determined to be **`r best_k`**. @fig-knn-accuracy shows that as *k* increases, the accuracy stabilizes around 80%, indicating a good tradeoff between underfitting and overfitting.
 
 From @tbl-metrics, our K-Nearest Neighbors (KNN) classification model achieved an accuracy of `r round(confusion$overall["Accuracy"] * 100, 2)`%, indicating that it correctly predicts default and non-default cases in about 80% of instances. 
 However, the model performs significantly better at identifying non-defaulters (sensitivity: `r round(confusion$byClass["Sensitivity"] * 100, 2)`%) than defaulters (specificity: `r round(confusion$byClass["Specificity"] * 100, 2)`%). 
-@tbl-conf-matrix reveals a high false negative rate (`r conf_matrix[1,2]` cases), meaning that many actual defaulters were misclassified as non-defaulters. 
+@tbl-conf-matrix reveals a high false negative rate (`r false_negatives` cases), meaning that many actual defaulters were misclassified as non-defaulters. 
 The balanced accuracy of `r round(confusion$byClass["Balanced Accuracy"] * 100, 2)`% suggests that the model struggles with class imbalance, favoring the majority class (non-defaulters). 
 To improve the result, we could use techniques to balance the dataset and try other classification models.
 
