@@ -1,16 +1,12 @@
 # Ignore Jupyter checkpoint folders
 .ipynb_checkpoints/
 
-# Hide data, output, and rendered assets
-data/
-results/
-analysis_files/
+
 
 # Ignore random plot outputs
 Rplots.pdf
 
-# Optional: ignore compiled output if not needed
-*.html
+
 
 # History files
 .Rhistory
