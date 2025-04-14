@@ -1,6 +1,6 @@
 library(tidyverse)
 library(docopt)
-source("R/clean_data.R")
+library(creditCardTool)
 
 doc <- "Usage: 02-data_clean.R --file_path=<file_path> --output_path=<output_path>"
 

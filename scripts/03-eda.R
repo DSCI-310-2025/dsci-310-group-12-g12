@@ -5,6 +5,8 @@ library(tidyverse)
 library(docopt)
 library(ggplot2)
 
+library(creditCardTool)
+
 # Define docstring for command-line argument parsing
 doc <- "
 This script performs exploratory data analysis (EDA) and generates visualizations

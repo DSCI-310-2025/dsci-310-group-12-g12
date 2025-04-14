@@ -17,18 +17,12 @@ editor: source
 set.seed(123)
 
 suppressPackageStartupMessages({
-  library(caret)
-  library(dplyr)
-  library(ggplot2)
-  library(e1071)
-  library(caTools)
-  library(class)
-  library(tidyverse)
-  library(readr)
-  library(knitr)
+  library(creditCardTool) 
+  library(tidyverse)       
+  library(caret)           
+  library(class)          
+  library(knitr)           
 })
-
-purrr::walk(list.files("R", full.names = TRUE), source)
 
 ```
 

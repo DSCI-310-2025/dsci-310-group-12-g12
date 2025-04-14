@@ -7,6 +7,8 @@ library(class)  # For KNN algorithm
 library(docopt)
 library(ggplot2)
 
+library(creditCardTool)
+
 # Define docstring for command-line argument parsing
 doc <- "
 This script performs modeling on the provided dataset and generates 
