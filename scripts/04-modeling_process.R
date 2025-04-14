@@ -50,12 +50,6 @@ test_df_norm <- as.data.frame(lapply(test_df[, numeric_columns], normalize))
 train_df_norm <- train_df_norm[, colnames(train_df_norm) != "default_payment_next_month"]
 test_df_norm <- test_df_norm[, colnames(test_df_norm) != "default_payment_next_month"]
 
-# Save interim datasets for validation
-readr::write_csv(data, "data/interim/full.csv")
-readr::write_csv(train_df, "data/interim/train.csv")
-readr::write_csv(test_df, "data/interim/test.csv")
-readr::write_csv(train_df_norm, "data/interim/train_norm.csv")
-readr::write_csv(test_df_norm, "data/interim/test_norm.csv")
 
 # Try different k values and store accuracy results
 k_values <- seq(1, 20, by = 1)  # Testing k from 1 to 20
