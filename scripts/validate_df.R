@@ -43,3 +43,4 @@ check_duplicates <- function(df) {
   cat("No duplicate rows.
 ")
 }
+

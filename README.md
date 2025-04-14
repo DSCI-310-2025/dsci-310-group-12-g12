@@ -59,6 +59,34 @@ quarto::quarto_render("analysis.qmd")
 ```
 Then open analysis.html.
 
+## Data Validation
+
+We implemented validation checks to ensure the integrity, quality, and robustness of our dataset and model inputs.
+You can validate the cleaned dataset using the script in the `scripts/` folder.
+
+
+### 1. Raw Data Validation
+
+Validate the cleaned dataset for structure, missing values, class imbalance, and duplicates using:
+
+```bash
+Rscript scripts/run_validate_df.R --file_path=data/clean/UCI_Credit_Card_processed.csv
+```
+
+### 2. Split & Normalization Validation
+
+Validate that the train-test split, normalization, and duplicate handling are correct using:
+
+```bash
+Rscript scripts/run_validate_split.R --full_data=data/clean/UCI_Credit_Card_processed.csv
+```
+
+#### Optional: Use Makefile
+
+```bash
+make validate
+```
+
 ## List of Dependencies
 The following dependencies are required to run the project:
 
