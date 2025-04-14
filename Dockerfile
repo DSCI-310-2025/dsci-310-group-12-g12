@@ -4,10 +4,14 @@ FROM rocker/rstudio:4.4.2
 RUN Rscript -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
 RUN Rscript -e "install.packages('remotes', repos = 'https://cloud.r-project.org')"
 
+# Install pak
 RUN Rscript -e 'install.packages("pak")'
 
-# Install all additional packages your analysis needs
-RUN Rscript -e 'pak::pak("DSCI-310-2025/creditCardTool@0.0.0.9000", dependencies = TRUE)'
+# Install dependencies manually
+RUN Rscript -e 'install.packages(c("ggplot2", "tidyr", "dplyr", "janitor", "caret", "class", "testthat", "tibble", "utils"))'
+
+# Then install your GitHub package (now all deps are already present)
+RUN Rscript -e 'pak::pak("DSCI-310-2025/creditCardTool")'
 
 # Install specific version of dplyr (if really needed)
 RUN Rscript -e "remotes::install_version('dplyr', version = '1.0.10', repos = 'https://cloud.r-project.org')"
