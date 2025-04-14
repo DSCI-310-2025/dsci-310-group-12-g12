@@ -1,6 +1,11 @@
 # Ignore Jupyter checkpoint folders
 .ipynb_checkpoints/
 
+# Hide data, output, and rendered assets
+data/
+results/
+analysis_files/
+
 # Ignore random plot outputs
 Rplots.pdf
 

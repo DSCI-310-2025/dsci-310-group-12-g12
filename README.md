@@ -8,50 +8,56 @@
 
 
 ## Project Summary
-This project aims to predict whether a customer will default on a credit card payment based on various financial and demographic features. The dataset used includes information about customers’ credit history, payment status, demographic data, and other relevant factors. We will use machine learning models to predict the likelihood of a customer defaulting.
+This project aims to predict whether a customer will default on a credit card payment based on various financial and demographic features. The dataset includes information about customers’ credit history, payment status, demographic data, and other relevant factors. We use machine learning models, specifically K-Nearest Neighbors (KNN), to predict the likelihood of a customer defaulting.
 
-The goal is to build a reliable model that can classify whether a customer is at risk of default, which can help financial institutions make more informed lending decisions.
+We built a modular R package — [`creditCardTool`](https://github.com/DSCI-310-2025/creditCardTool) — to handle preprocessing, visualization, and modeling tasks. This package is now used throughout the analysis.
+We use version 0.0.0.9000 of creditCardTool, installed via pak.
 
 ## Data Description
-The data used to build our model contains customer information, including payment history, demographic details, and financial behavior. The dataset was collected from the **UCI Machine Learning Repository** and is specifically referred to as the "Default of Credit Card Clients Dataset." This dataset contains information about credit card clients in Taiwan and is available for download at the following URL:
+The dataset used in this project is from the **UCI Machine Learning Repository** and is referred to as the "Default of Credit Card Clients Dataset." It contains information about credit card clients in Taiwan from April to September 2005.
 
 - [Kaggle - Default of Credit Card Clients Dataset](https://www.kaggle.com/datasets/uciml/default-of-credit-card-clients-dataset)
 
-
 ## How to Run the Data Analysis
 
-### 1. Prerequisites
+You can reproduce the entire analysis using Docker or `make`.
 
-Ensure Docker Desktop (version 3.3.0 or later) is installed and is able to run properly.
+---
 
-### 2. Clone the Repository
+### Option 1: Reproduce with Docker (Recommended)
 
-Clone the repository and navigate into the project directory:
+Ensure Docker Desktop (v3.3.0 or later) is installed and running.
+
 ```bash
+# Clone this repository
 git clone https://github.com/DSCI-310-2025/dsci-310-group-12-g12.git
 cd dsci-310-group-12-g12
+
+# Build the container and run analysis
+docker build -t credit-default .
+docker run --rm -v $PWD:/home/rstudio/project credit-default make
 ```
 
-### 3. Set up environment
-Run the docker container
- 
+This will render analysis.qmd and output analysis.html.
 
-`docker-compose up`
+### Option 2: Run Locally
+1.	Make sure you have **R**, **Quarto**, and **pak** installed
+2.	Install dependencies with:
 
-### 4. Access RStudio and Run the Analysis
+```r
+pak::pak("DSCI-310-2025/creditCardTool")
+```
+3.	Run the full analysis:
 
-Once the services are up, open your web browser and navigate to [http://localhost:8787](http://localhost:8787).
+```bash
+make
+```
 
-### 5. Makefile Command
-
-You can render the analysis in terminal:
-
-`quarto render("analysis.qmd")`
-
-After rendering:
-
-`open analysis.html`
-
+4.	Or manually render:
+```r
+quarto::quarto_render("analysis.qmd")
+```
+Then open analysis.html.
 
 ## List of Dependencies
 The following dependencies are required to run the project:
@@ -59,8 +65,8 @@ The following dependencies are required to run the project:
 - Docker
 - Git 
 - R packages: 
+    - `creditCardTool`
     - `tidyverse`
-    - `janitor`
     - `docopt`
     - `ggplot2`
     - `caret`

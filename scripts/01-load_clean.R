@@ -1,7 +1,8 @@
 library(tidyverse)
 library(janitor)
 library(docopt)
-source("R/clean_data.R")
+
+library(creditCardTool)
 
 doc <- "Usage: 01-load_clean.R --file_path=<file_path> --output_path=<output_path>"
 
