@@ -4,8 +4,7 @@ FROM rocker/rstudio:4.4.2
 RUN Rscript -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
 RUN Rscript -e "install.packages('remotes', repos = 'https://cloud.r-project.org')"
 
-# Install pak first
-RUN install.packages("pak")
+RUN Rscript -e 'install.packages("pak")'
 
 # Install all additional packages your analysis needs
 RUN Rscript -e 'pak::pak("DSCI-310-2025/creditCardTool@0.0.0.9000")'
